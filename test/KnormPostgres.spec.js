@@ -2109,6 +2109,32 @@ describe('KnormPostgres', () => {
         });
       });
 
+      it('executes a query through the parent Query.prototype.query when the transaction has ended', async () => {
+        const user = await new Transaction(async transaction => {
+          return new transaction.models.User({ id: 1, name: 'foo' }).insert();
+        });
+        await expect(user, 'to satisfy', { id: 1, name: 'foo' });
+        await expect(
+          knex,
+          'with table',
+          User.table,
+          'to have sorted rows satisfying',
+          [{ id: 1, name: 'foo' }]
+        );
+        user.name = 'bar';
+        await expect(user.update(), 'to be fulfilled with value satisfying', {
+          id: 1,
+          name: 'bar'
+        });
+        await expect(
+          knex,
+          'with table',
+          User.table,
+          'to have sorted rows satisfying',
+          [{ id: 1, name: 'bar' }]
+        );
+      });
+
       describe('for query hooks', () => {
         it('calls `beforeQuery`', async () => {
           const transaction = new Transaction(({ models: { User } }) =>
@@ -2331,6 +2357,36 @@ describe('KnormPostgres', () => {
         await transaction.commit();
         await expect(spy, 'was called once');
         spy.restore();
+      });
+
+      it('executes a query through the parent Query.prototype.query when the transaction has ended', async () => {
+        const transaction = new Transaction();
+        const user = await new transaction.models.User({
+          id: 1,
+          name: 'foo'
+        }).insert();
+        await transaction.commit();
+        await expect(user, 'to satisfy', { id: 1, name: 'foo' });
+        await expect(
+          knex,
+          'with table',
+          User.table,
+          'to have sorted rows satisfying',
+          [{ id: 1, name: 'foo' }]
+        );
+        user.name = 'bar';
+        await expect(user.update(), 'to be fulfilled with value satisfying', {
+          id: 1,
+          name: 'bar'
+        });
+        await expect(user, 'to satisfy', { id: 1, name: 'bar' });
+        await expect(
+          knex,
+          'with table',
+          User.table,
+          'to have sorted rows satisfying',
+          [{ id: 1, name: 'bar' }]
+        );
       });
 
       describe('begin', () => {
