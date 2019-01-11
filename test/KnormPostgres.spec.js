@@ -2342,6 +2342,14 @@ describe('KnormPostgres', () => {
           await expect(spy, 'was called once');
         });
 
+        it('sets the `active` flag to `true`', async () => {
+          const transaction = new Transaction();
+          await expect(transaction.active, 'to be undefined');
+          await transaction.begin();
+          await expect(transaction.active, 'to be true');
+          await transaction.rollback();
+        });
+
         it('rolls back the transaction on failure', async () => {
           const transaction = new Transaction();
           const spy = sinon.spy(transaction, '_rollback');
@@ -2438,6 +2446,14 @@ describe('KnormPostgres', () => {
       });
 
       describe('commit', () => {
+        it('sets the `active` flag to `false`', async () => {
+          const transaction = new Transaction();
+          await transaction.begin();
+          await expect(transaction.active, 'to be true');
+          await transaction.commit();
+          await expect(transaction.active, 'to be false');
+        });
+
         it('rolls back the transaction on failure', async () => {
           const transaction = new Transaction();
           const spy = sinon.spy(transaction, '_rollback');
@@ -2495,6 +2511,14 @@ describe('KnormPostgres', () => {
       });
 
       describe('rollback', () => {
+        it('sets the `active` flag to `false`', async () => {
+          const transaction = new Transaction();
+          await transaction.begin();
+          await expect(transaction.active, 'to be true');
+          await transaction.rollback();
+          await expect(transaction.active, 'to be false');
+        });
+
         it('releases the client on failure', async () => {
           let client;
           const transaction = new Transaction();
