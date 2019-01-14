@@ -2406,6 +2406,22 @@ describe('KnormPostgres', () => {
           await transaction.rollback();
         });
 
+        it('sets the `started` flag to `true`', async () => {
+          const transaction = new Transaction();
+          await expect(transaction.started, 'to be undefined');
+          await transaction.begin();
+          await expect(transaction.started, 'to be true');
+          await transaction.rollback();
+        });
+
+        it('leaves the `ended` flag as `undefined`', async () => {
+          const transaction = new Transaction();
+          await expect(transaction.ended, 'to be undefined');
+          await transaction.begin();
+          await expect(transaction.ended, 'to be undefined');
+          await transaction.rollback();
+        });
+
         it('rolls back the transaction on failure', async () => {
           const transaction = new Transaction();
           const spy = sinon.spy(transaction, '_rollback');
@@ -2510,6 +2526,22 @@ describe('KnormPostgres', () => {
           await expect(transaction.active, 'to be false');
         });
 
+        it('sets the `ended` flag to `true`', async () => {
+          const transaction = new Transaction();
+          await transaction.begin();
+          await expect(transaction.ended, 'to be undefined');
+          await transaction.commit();
+          await expect(transaction.ended, 'to be true');
+        });
+
+        it('leaves the `started` flag as `true`', async () => {
+          const transaction = new Transaction();
+          await transaction.begin();
+          await expect(transaction.started, 'to be true');
+          await transaction.commit();
+          await expect(transaction.started, 'to be true');
+        });
+
         it('rolls back the transaction on failure', async () => {
           const transaction = new Transaction();
           const spy = sinon.spy(transaction, '_rollback');
@@ -2573,6 +2605,22 @@ describe('KnormPostgres', () => {
           await expect(transaction.active, 'to be true');
           await transaction.rollback();
           await expect(transaction.active, 'to be false');
+        });
+
+        it('sets the `ended` flag to `true`', async () => {
+          const transaction = new Transaction();
+          await transaction.begin();
+          await expect(transaction.ended, 'to be undefined');
+          await transaction.rollback();
+          await expect(transaction.ended, 'to be true');
+        });
+
+        it('leaves the `started` flag as `true`', async () => {
+          const transaction = new Transaction();
+          await transaction.begin();
+          await expect(transaction.started, 'to be true');
+          await transaction.rollback();
+          await expect(transaction.started, 'to be true');
         });
 
         it('releases the client on failure', async () => {
