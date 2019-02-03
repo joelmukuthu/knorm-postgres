@@ -15,7 +15,7 @@
   "license": "MIT",
   "peerDependencies": {
     "@knorm/knorm": "^2.0.0",
-    "@knorm/relations": "^1.2.3"
+    "@knorm/relations": "^1.2.3 || ^2.0.0"
   },
   "devDependencies": {
     "@knorm/knorm": "2.0.0",
