@@ -7,7 +7,4 @@
 
 Postgres plugin for [@knorm/knorm](https://www.npmjs.com/package/@knorm/knorm).
 
-## [Documentation](https://knorm.netlify.com/plugins/postgres.html)
-
-View the docs on @knorm/knorm's documentation site
-[here](https://knorm.netlify.com/plugins/postgres.html).
+## Moved to https://github.com/knorm/knorm/tree/master/packages/postgres
